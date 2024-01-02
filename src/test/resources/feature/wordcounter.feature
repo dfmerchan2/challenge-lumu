@@ -3,7 +3,8 @@ Feature: Analyze the different phrases in WordCounter
   Scenario Outline: Analyze the sentences
     Given that "Diego" entered the WordCounter page
     When enter the phrase "<word>"
-    Then can validate the Keyword Density
+    And it generated an analysis of the entered word
+    Then should can validate the Keyword Density
     And should look at the detail of the word
     Examples:
       | word                                                                                                                  |

@@ -27,9 +27,8 @@ public class Operations {
         return element.resolveFor(actor).getText().split(" ")[0];
     }
 
-    public static Map<String, Long> getKeywordDensity(String word) {
-        return removeExcludedWords(word)
-                .stream()
+    public static Map<String, Long> getKeywordDensity(List<String> word) {
+        return word.stream()
                 .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()))
                 .entrySet()
                 .stream()

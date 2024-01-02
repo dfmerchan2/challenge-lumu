@@ -2,18 +2,18 @@ package co.com.wordcounter.stepdefinitions;
 
 import co.com.wordcounter.interactions.OpenBrowser;
 import co.com.wordcounter.tasks.EnterTheSentence;
-import co.com.wordcounter.tasks.ValidateKeywordDensity;
+import co.com.wordcounter.tasks.WordAnalysis;
 import co.com.wordcounter.utilities.Operations;
 import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 
-import java.util.List;
+import java.util.Map;
 
-import static co.com.wordcounter.userinterfaces.HomePage.LBL_CHARACTERS;
-import static co.com.wordcounter.userinterfaces.HomePage.LBL_WORDS;
+import static co.com.wordcounter.userinterfaces.HomePage.*;
 import static co.com.wordcounter.utilities.ActorNotepad.WORD_VALUE;
+import static co.com.wordcounter.utilities.Operations.*;
 import static net.serenitybdd.screenplay.GivenWhenThen.seeThat;
 import static net.serenitybdd.screenplay.actors.OnStage.theActorCalled;
 import static net.serenitybdd.screenplay.actors.OnStage.theActorInTheSpotlight;
@@ -35,17 +35,31 @@ public class WordCounterStepDefinition {
         );
     }
 
-    @Then("can validate the Keyword Density")
-    public void canValidateTheKeywordDensity() {
+    @And("it generated an analysis of the entered word")
+    public void itGeneratedAnAnalysisOfTheEnteredWord() {
         String word = theActorInTheSpotlight().recall(WORD_VALUE.getKey());
 
         theActorInTheSpotlight().attemptsTo(
-                ValidateKeywordDensity.ofTheWord(word)
+                WordAnalysis.toEvaluate(word)
+        );
+    }
+
+    @Then("should can validate the Keyword Density")
+    public void shouldCanValidateTheKeywordDensity() {
+        String word = theActorInTheSpotlight().recall(WORD_VALUE.getKey());
+        Map<String, Long> listWord = getKeywordDensity(removeExcludedWords(word));
+
+        listWord.forEach(
+                (key, value) -> theActorInTheSpotlight().should(
+                        seeThat(String.format("Validates that the density of the keyword '%s' is '%s'", key, value),
+                                actor -> getValue(LBL_KEYWORD_DENSITY.of(key), actor),
+                                equalTo(String.valueOf(value)))
+                )
         );
     }
 
     @And("should look at the detail of the word")
-    public void canObserveTheAnalysisObtainedFromThePhrase() {
+    public void shouldLookAtTheDetailOfTheWord() {
         String word = theActorInTheSpotlight().recall(WORD_VALUE.getKey());
 
         theActorInTheSpotlight().should(
